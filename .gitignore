@@ -1,2 +1,8 @@
 scratch/
 uploads/
+
+# wrangler
+.wrangler
+.dev.vars*
+!.dev.vars.example
+
