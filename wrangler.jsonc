@@ -1,7 +1,18 @@
 {
   "name": "gale",
   "compatibility_date": "2026-11-13",
+  "workers_dev": true,
   "assets": {
     "directory": "./public"
-  }
+  },
+  "routes": [
+    {
+      "pattern": "gale.rocks",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.gale.rocks",
+      "custom_domain": true
+    }
+  ]
 }

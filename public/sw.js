@@ -4,10 +4,11 @@
    Cache fallback keeps offline launch + <1s relaunch working.
    Reading content + progress live in localStorage/IndexedDB (handled by the app),
    which the SW never touches, so persistent progress is never cleared here. */
-const CACHE = 'reading-room-v3';
+const CACHE = 'reading-room-v4';
 const FONT_N = 42; // fonts/gf0..gf41.woff2
 const SHELL = [
   './',
+  './index.html',
   './TextualReverie.dc.html',
   './support.js',
   './reverie-config.js',
