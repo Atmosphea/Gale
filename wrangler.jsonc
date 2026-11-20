@@ -14,5 +14,8 @@
       "pattern": "www.gale.rocks",
       "custom_domain": true
     }
-  ]
+  ],
+  // Pull-request builds run `wrangler preview`, which requires this block.
+  // It can be empty. Production deploy does not use it.
+  "previews": {}
 }
