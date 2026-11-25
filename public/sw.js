@@ -53,6 +53,9 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
+  // The reading-list iframe is cross-origin. Leave it to the browser so a failed
+  // fetch is not replaced with the app shell inside the signup frame.
+  try { if (new URL(req.url).hostname === 'galerocks.substack.com') return; } catch (err) {}
   // Network-first everywhere: fresh code when online, cached copy when offline.
   e.respondWith(
     fetch(req).then((res) => {

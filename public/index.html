@@ -49,6 +49,12 @@
   <main style="box-sizing:border-box;max-width:40rem;margin:0 auto;padding:4.5rem 1.5rem;min-height:100vh;font-family:Georgia,serif;color:#f4f3ee;background:#0e120b;">
     <h1 style="font-size:2.75rem;font-weight:500;line-height:1.1;margin:0 0 1rem;">Gale</h1>
     <p style="font-family:system-ui,sans-serif;font-size:1.05rem;line-height:1.6;margin:0;">Gale is a reader for text you paste yourself. The library starts empty. Your place, highlights, and settings stay in this browser.</p>
+    <section style="margin-top:2.75rem;">
+      <h2 style="font-size:1.35rem;font-weight:500;line-height:1.2;margin:0 0 .75rem;">Monthly reading list</h2>
+      <p style="font-family:system-ui,sans-serif;font-size:1.05rem;line-height:1.6;margin:0 0 1rem;">A monthly reading list. Free picks you can paste into Gale.</p>
+      <iframe src="https://galerocks.substack.com/embed" title="Gale Reading List signup" width="480" height="320" style="border:1px solid #EEE; background:white; max-width:100%;" frameborder="0" scrolling="no"></iframe>
+      <p style="font-family:system-ui,sans-serif;font-size:1rem;line-height:1.6;margin:1rem 0 0;"><a href="https://galerocks.substack.com" style="color:#f4f3ee;">https://galerocks.substack.com</a></p>
+    </section>
   </main>
 </noscript>
 <x-dc>
@@ -180,7 +186,7 @@ class Component extends DCLogic {
       questOpen: false, tuneOpen: false,
       discoverySize: (C.discoveryDefault != null ? C.discoveryDefault : 1),
       wavePos: 0,
-      pasteOpen: false,
+      pasteOpen: false, readingListOpen: false,
       libPage: 0, libShown: true, libExiting: false,
       speed: savedSettings.speed != null ? savedSettings.speed : 60000 / seedWpm,
       speedBase: savedSettings.speed != null ? savedSettings.speed : Math.round(60000 / seedWpm),   // "1×" reference for the speed-step slider
@@ -2386,6 +2392,22 @@ class Component extends DCLogic {
     );
   }
 
+  renderReadingList() {
+    const h = React.createElement;
+    const close = () => this.setState({ readingListOpen: false });
+    const stop = (e) => e.stopPropagation();
+    return h('div', { onMouseDown: stop, onTouchStart: stop, onClick: close, style: { position: 'absolute', inset: 0, background: 'rgba(8,11,6,.66)', backdropFilter: 'blur(7px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 72, padding: '24px' } },
+      h('div', { onClick: stop, role: 'dialog', 'aria-label': 'Monthly reading list', style: { width: 'min(520px,92vw)', maxHeight: '88vh', overflowY: 'auto', textAlign: 'center', background: 'rgba(14,17,11,.86)', border: '1px solid rgba(255,255,255,.18)', borderRadius: '6px', padding: '28px 22px 22px' } },
+        h('div', { style: { fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic', fontWeight: 500, fontSize: 'clamp(26px,3vw,32px)', color: '#fff', marginBottom: '8px' } }, 'Monthly reading list'),
+        h('p', { style: { fontFamily: "'Inter',sans-serif", fontSize: '14px', lineHeight: 1.55, color: 'rgba(255,255,255,.78)', margin: '0 0 16px' } }, 'A monthly reading list. Free picks you can paste into Gale.'),
+        h('iframe', { src: 'https://galerocks.substack.com/embed', title: 'Gale Reading List signup', width: '480', height: '320', frameBorder: '0', scrolling: 'no', style: { border: '1px solid #EEE', background: 'white', width: '100%', maxWidth: '480px', height: '320px' } }),
+        h('p', { style: { margin: '14px 0 0' } },
+          h('a', { href: 'https://galerocks.substack.com', target: '_blank', rel: 'noopener noreferrer', style: { fontFamily: "'Inter',sans-serif", fontSize: '13px', color: 'rgba(255,255,255,.82)' } }, 'https://galerocks.substack.com')),
+        h('button', { onClick: close, style: { marginTop: '16px', fontFamily: "'Inter',sans-serif", fontSize: '11px', fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', padding: '10px 18px', borderRadius: '40px', cursor: 'pointer', border: '1px solid rgba(255,255,255,.35)', background: 'transparent', color: '#fff' } }, 'Close')
+      )
+    );
+  }
+
   /* ===================== LIBRARY ===================== */
   renderLibrary() {
     const h = React.createElement, C = this.state.config, LB = C.libBuild || {};
@@ -2458,9 +2480,11 @@ class Component extends DCLogic {
 
       h('div', { style: Object.assign({ position: 'absolute', bottom: 'clamp(18px,4vh,38px)', left: 0, right: 0, zIndex: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', pointerEvents: shown ? 'auto' : 'none' }, fade((LB.chromeDelayMs || 120) + 160)) },
         (total > 1 && !this.state.preview) ? h('div', { style: { display: 'flex', alignItems: 'center', gap: '11px' } }, dots) : null,
-        h('button', { onClick: (e) => { e.stopPropagation(); this.bgUpload(); }, style: { fontFamily: "'Inter',sans-serif", fontSize: '10px', fontWeight: 400, letterSpacing: '.26em', textTransform: 'uppercase', color: '#fff', background: 'transparent', border: 'none', borderRadius: 0, padding: '4px', boxShadow: 'none', cursor: 'pointer', opacity: 0.2, transition: 'none' } }, 'Change background')
+        h('button', { onClick: (e) => { e.stopPropagation(); this.bgUpload(); }, style: { fontFamily: "'Inter',sans-serif", fontSize: '10px', fontWeight: 400, letterSpacing: '.26em', textTransform: 'uppercase', color: '#fff', background: 'transparent', border: 'none', borderRadius: 0, padding: '4px', boxShadow: 'none', cursor: 'pointer', opacity: 0.2, transition: 'none' } }, 'Change background'),
+        h('button', { onMouseDown: (e) => e.stopPropagation(), onTouchStart: (e) => e.stopPropagation(), onClick: (e) => { e.stopPropagation(); this.ensureAudio(); this.playSound('open'); this.setState({ readingListOpen: true }); }, style: { fontFamily: "'Inter',sans-serif", fontSize: '10px', fontWeight: 400, letterSpacing: '.22em', textTransform: 'uppercase', color: '#fff', background: 'transparent', border: 'none', borderRadius: 0, padding: '4px', boxShadow: 'none', cursor: 'pointer', opacity: 0.55, transition: 'none' } }, 'Monthly reading list')
       ),
 
+      this.state.readingListOpen ? this.renderReadingList() : null,
       this.state.pasteOpen ? this.renderPaste() : null,
       this.state.importing ? this.renderImporting() : null,
       this.state.confirmDel ? this.renderConfirmDel() : null,
@@ -2519,7 +2543,8 @@ class Component extends DCLogic {
       ]],
       ['Privacy Policy', [
         'The Reading Room runs entirely on your device. The books you import, your reading positions, highlights, presets and settings are stored in your browser\u2019s local storage and are never sent anywhere.',
-        'There are no accounts, ads, analytics or trackers. Export Data creates a file on your device that only you control; nothing is uploaded.',
+        'There are no accounts, ads, or analytics in Gale. Export Data creates a file on your device that only you control; nothing is uploaded.',
+        'The monthly reading list is a Substack signup embedded in the reading room. An email entered there is sent to Substack, not stored in Gale.',
         'Read-aloud uses the voices provided by your device. Some operating systems supply certain voices online, under their own privacy terms.',
         'Clearing your browser data or uninstalling the app deletes your library. Export a backup to keep it.'
       ]],
